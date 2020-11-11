@@ -112,6 +112,7 @@
 		<a href="bbs.jsp?pageNumber=<%=pageNumber + 1 %>" class="btn btn-success">다음</a>
 	<%
 		}
+		bbsDAO.connClose();
 	%>
 		<a href="write.jsp" class="btn btn-primary float-right <%=opt %>" id="writeBtn">글쓰기</a>
 	</div>
