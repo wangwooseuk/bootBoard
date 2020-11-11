@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="bbs.BbsDAO, bbs.Bbs, java.util.Vector" %>
 <%
 	String id = (String)session.getAttribute("userId");
-	if(id != null) {
-		response.sendRedirect("main.jsp");
+	String opt = "";
+	if(id == null) {
+		opt = " disabled";
 	}
 %>
 <!doctype html>
@@ -33,7 +35,7 @@
   					<a class="nav-link" href="main.jsp">메인</a>
   				</li>
   				<li class="nav-item">
-  					<a class="nav-link" href="bbs.jsp">게시판</a>
+  					<a class="nav-link active" href="bbs.jsp">게시판<span class="sr-only">(current)</span></a>
   				</li>
   			</ul>
   			<ul class="navbar-nav ml-auto">
@@ -42,58 +44,77 @@
   					role="button" data-toggle="dropdown" aria-haspopup="true"
   					aria-expanded="false">접속하기</a>
   					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	<%
+		if(id == null) {
+	%>  					
 				  		<a class="dropdown-item" href="login.jsp">
 				  			로그인
 				  		</a> <!-- active와 span-sr-only는 같이씀 -->
 				  		<div class="dropdown-divider"></div>
-				  		<a class="dropdown-item active" href="join.jsp">
-				  			회원가입<span class="sr-only">(current)</span>
+				  		<a class="dropdown-item" href="join.jsp">
+				  			회원가입
 				  		</a>
+	<%
+		} else {
+	%>
+						<a class="dropdown-item" href="logoutaction.jsp">
+				  			로그아웃
+				  		</a>
+	<%
+		}
+	%>
   					</div>
   				</li>
   			</ul>
   		</div>
   	</nav>
-    <div class="container pt-3">
-    	<div class="row">
-	    	<div class="col-lg-4 offset-lg-4">
-	    		<div class="jumbotron pt-5">
-	    			<form method="post" action="joinaction.jsp">
-	    				<h3 class="text-center pb-2">회원가입</h3>
-	    				<div class="form-group">
-	    					<input type="text" class="form-control" name="userId"
-	    					placeholder="아이디" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="password" class="form-control" name="userPassword"
-	    					placeholder="비밀번호" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="text" class="form-control" name="userName"
-	    					placeholder="이름" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group text-center">
-	    					<div class="btn-group" data-toggle="buttons">
-	    						<label class="btn btn-primary active">
-	   			 					<input type="radio" class="d-none" name="userGender"
-	    							autocomplete="off" value="남자" checked="checked"/>남자
-	    						</label>
-	    						<label class="btn btn-primary">
-	   			 					<input type="radio" class="d-none" name="userGender"
-	    							autocomplete="off" value="여자" />여자
-	    						</label>
-	    					</div>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="email" class="form-control" name="userEmail"
-	    					placeholder="이메일" maxlength="20" required="required"/>
-	    				</div>
-	    				<button type="submit" class="btn btn-primary form-control">가입</button>
-	    			</form>
-	    		</div>
-	    	</div>
-    	</div>
-    </div>
+	<div class="container pt-3">
+		<table class="table table-striped text-center">
+			<thead class="thead-light">
+				<tr>
+					<th>번호</th>
+					<th>제목</th>
+					<th>작성자</th>
+					<th>작성일</th>
+				</tr>	
+			</thead>
+			<tbody>
+	<%
+			int pageNumber = 1;
+			if(request.getParameter("pageNumber") != null) {
+				pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+			}
+			BbsDAO bbsDAO = new BbsDAO();
+			Vector<Bbs> list = bbsDAO.getList(pageNumber);
+			for(int i=0; i<list.size(); i++) {
+	%>
+			<tr>
+				<td><%=list.get(i).getBbsId() %></td>
+				<td><a href="view.jsp?bbsId=<%=list.get(i).getBbsId() %>">
+					<%=list.get(i).getBbsTitle() %>
+				</a></td>
+				<td><%=list.get(i).getUserId() %></td>
+				<td><%=list.get(i).getBbsDate() %></td>
+			</tr>
+	<%
+			}
+	%>
+			</tbody>
+		</table>
+	<%
+		if(pageNumber != 1) {
+	%>
+		<a href="bbs.jsp?pageNumber=<%=pageNumber - 1 %>" class="btn btn-success mr-1">이전</a>
+	<%
+		}
+		if(bbsDAO.nextPage(pageNumber+1)) {
+	%>
+		<a href="bbs.jsp?pageNumber=<%=pageNumber + 1 %>" class="btn btn-success">다음</a>
+	<%
+		}
+	%>
+		<a href="write.jsp" class="btn btn-primary float-right <%=opt %>" id="writeBtn">글쓰기</a>
+	</div>
     
     <!-- Optional JavaScript-->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

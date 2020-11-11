@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%
+	String id = (String)session.getAttribute("userId");
+	if(id != null) {
+		response.sendRedirect("main.jsp");
+	}
+%>
 <!doctype html>
 <html>
   <head>
@@ -36,7 +42,7 @@
   					role="button" data-toggle="dropdown" aria-haspopup="true"
   					aria-expanded="false">접속하기</a>
   					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				  		<a class="dropdown-item active" href="login.jsp">
+				  		<a class="dropdown-item active" href="login.jsp" id="loginBtn">
 				  			로그인<span class="sr-only">(current)</span>
 				  		</a> <!-- active와 span-sr-only는 같이씀 -->
 				  		<div class="dropdown-divider"></div>

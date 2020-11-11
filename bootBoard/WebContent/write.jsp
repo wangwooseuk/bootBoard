@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%
 	String id = (String)session.getAttribute("userId");
-	if(id != null) {
+	if(id == null) {
 		response.sendRedirect("main.jsp");
 	}
 %>
@@ -33,7 +33,7 @@
   					<a class="nav-link" href="main.jsp">메인</a>
   				</li>
   				<li class="nav-item">
-  					<a class="nav-link" href="bbs.jsp">게시판</a>
+  					<a class="nav-link active" href="bbs.jsp">게시판<span class="sr-only">(current)</span></a>
   				</li>
   			</ul>
   			<ul class="navbar-nav ml-auto">
@@ -42,58 +42,57 @@
   					role="button" data-toggle="dropdown" aria-haspopup="true"
   					aria-expanded="false">접속하기</a>
   					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	<%
+		if(id == null) {
+	%>  					
 				  		<a class="dropdown-item" href="login.jsp">
 				  			로그인
 				  		</a> <!-- active와 span-sr-only는 같이씀 -->
 				  		<div class="dropdown-divider"></div>
-				  		<a class="dropdown-item active" href="join.jsp">
-				  			회원가입<span class="sr-only">(current)</span>
+				  		<a class="dropdown-item" href="join.jsp">
+				  			회원가입
 				  		</a>
+	<%
+		} else {
+	%>
+						<a class="dropdown-item" href="logoutaction.jsp">
+				  			로그아웃
+				  		</a>
+	<%
+		}
+	%>
   					</div>
   				</li>
   			</ul>
   		</div>
   	</nav>
-    <div class="container pt-3">
-    	<div class="row">
-	    	<div class="col-lg-4 offset-lg-4">
-	    		<div class="jumbotron pt-5">
-	    			<form method="post" action="joinaction.jsp">
-	    				<h3 class="text-center pb-2">회원가입</h3>
-	    				<div class="form-group">
-	    					<input type="text" class="form-control" name="userId"
-	    					placeholder="아이디" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="password" class="form-control" name="userPassword"
-	    					placeholder="비밀번호" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="text" class="form-control" name="userName"
-	    					placeholder="이름" maxlength="20" required="required"/>
-	    				</div>
-	    				<div class="form-group text-center">
-	    					<div class="btn-group" data-toggle="buttons">
-	    						<label class="btn btn-primary active">
-	   			 					<input type="radio" class="d-none" name="userGender"
-	    							autocomplete="off" value="남자" checked="checked"/>남자
-	    						</label>
-	    						<label class="btn btn-primary">
-	   			 					<input type="radio" class="d-none" name="userGender"
-	    							autocomplete="off" value="여자" />여자
-	    						</label>
-	    					</div>
-	    				</div>
-	    				<div class="form-group">
-	    					<input type="email" class="form-control" name="userEmail"
-	    					placeholder="이메일" maxlength="20" required="required"/>
-	    				</div>
-	    				<button type="submit" class="btn btn-primary form-control">가입</button>
-	    			</form>
-	    		</div>
-	    	</div>
-    	</div>
-    </div>
+	<div class="container pt-3">
+		<form method="post" action="writeaction.jsp">
+			<table class="table table-striped text-center">
+				<thead class="thead-light">
+					<tr>
+						<th>게시판 글쓰기</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<input type="text" class="form-control" placeholder="글 제목"
+							name="bbsTitle" maxlength="50" />
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<textarea class="form-control" placeholder="글 내용" name="bbsContent"
+							maxlength="2048" style="height: 350px; resize: none;"></textarea>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<a href="bbs.jsp" class="btn btn-success float-left">목록</a>
+			<button type="submit" class="btn btn-primary float-right">글쓰기</button>
+		</form>
+	</div>
     
     <!-- Optional JavaScript-->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

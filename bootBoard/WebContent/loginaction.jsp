@@ -17,6 +17,7 @@
 		int result = userDAO.login(user.getUserId(), user.getUserPassword());
 		userDAO.connClose();
 		if(result == 1) {
+			session.setAttribute("userId", user.getUserId()); //세션에 아이디 저장
 			out.println("<script>");
 			out.println("location.href='main.jsp'");
 			out.println("</script>");
