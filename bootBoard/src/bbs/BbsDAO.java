@@ -90,9 +90,12 @@ public class BbsDAO {
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				Bbs bbs = new Bbs();
-				bbs.setBbsId(rs.getInt(1)); bbs.setBbsTitle(rs.getString(2));
-				bbs.setUserId(rs.getString(3)); bbs.setBbsDate(rs.getString(4));
-				bbs.setBbsContent(rs.getString(5)); bbs.setBbsAvailable(rs.getInt(6));
+				bbs.setBbsId(rs.getInt(1));
+				bbs.setBbsTitle(rs.getString(2));
+				bbs.setUserId(rs.getString(3)); 
+				bbs.setBbsDate(rs.getString(4));
+				bbs.setBbsContent(rs.getString(5)); 
+				bbs.setBbsAvailable(rs.getInt(6));
 				list.add(bbs);
 			}
 		} catch(Exception e) {
@@ -101,11 +104,26 @@ public class BbsDAO {
 		return list;
 	}
 	
+	public int bbsCnt() {
+		String sql = "select count(*) from bbs where bbsId < ? and bbsAvailable = 1";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, getNext());
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 	public boolean nextPage(int pageNumber) {
 		String sql = "select * from bbs where bbsId < ? and bbsAvailable = 1";
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, getNext() - (pageNumber - 1) * 10);
+			pstmt.setInt(1, bbsCnt() - (pageNumber - 2) * 10);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				return true;
@@ -114,5 +132,53 @@ public class BbsDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public Bbs getBbs(int bbsId) {
+		String sql = "select * from bbs where bbsId = ?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bbsId);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				Bbs bbs = new Bbs();
+				bbs.setBbsId(rs.getInt(1));
+				bbs.setBbsTitle(rs.getString(2));
+				bbs.setUserId(rs.getString(3));
+				bbs.setBbsDate(rs.getString(4));
+				bbs.setBbsContent(rs.getString(5));
+				bbs.setBbsAvailable(rs.getInt(6));
+				return bbs;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public int update(int bbsId, String bbsTitle, String bbsContent) {
+		String sql = "update bbs set bbsTitle = ?, bbsContent = ? where bbsId = ?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, bbsTitle);
+			pstmt.setString(2, bbsContent);
+			pstmt.setInt(3, bbsId);
+			return pstmt.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return -1; //데이터베이스 오류 코드
+	}
+	
+	public int delete(int bbsId) {
+		String sql = "update bbs set bbsAvailable = 0 where bbsId = ?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bbsId);
+			return pstmt.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return -1; //데이터베이스 오류 코드
 	}
 }
